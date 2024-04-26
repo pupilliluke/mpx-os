@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "stddef.h": "c",
+        "cstdio": "c",
+        "chrono": "c",
+        "queue": "c"
+    }
+}
