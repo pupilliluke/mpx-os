@@ -19,8 +19,6 @@ void show_allocated_memory(void);
 void show_free_memory(void);
 void printHex(unsigned int num);
 unsigned int reverseHex(const char* hexString);
-void show_allocated_memory(void);
-
 
 void* startAddress = NULL;
 
@@ -187,7 +185,7 @@ void com_hand(void) {
         //Version command
         else if (!strcmp(buff, "version") || !strcmp(buff, "Version"))
         {
-            sys_req(WRITE, COM1, "Version R5\n",12);
+            sys_req(WRITE, COM1, "Version R4\n",12);
         }
         //Get Time command
         else if (!strcmp(buff, "Get Time") || !strcmp(buff, "get time") || !strcmp(buff, "gettime") || !strcmp(buff, "GetTime")){
@@ -567,7 +565,7 @@ void com_hand(void) {
          else if(!strcmp(buff, "ShowPCB")|| !strcmp(buff, "showPCB") || !strcmp(buff, "Show PCB") || !strcmp(buff, "show PCB"))
         {
           sys_req(WRITE, COM1, "Enter the process name:\n", 24);
-          //read and store user inpuFt
+          //read and store user input
             char process_name[9];
             sys_req(READ, COM1, process_name, sizeof(process_name) - 1);
             // Trim the newline character from the input
@@ -844,6 +842,8 @@ void com_hand(void) {
         pcb* pcb4 = pcb_setup("Proc4", USER, 4);
         pcb* pcb5 = pcb_setup("Proc5", USER, 4);
 
+        //add these to if
+        // && pcb4 && pcb5
         if (pcb1 && pcb2 && pcb3 && pcb4 && pcb5) {
             // Initialize and save context for each process
             pcb1->StackPtr = (void*)((unsigned int)pcb1->Stack + sizeof(pcb1->Stack) - sizeof(context_t));
@@ -869,6 +869,8 @@ void com_hand(void) {
             //array with all context structs
             context_t* contexts[] = { ctx1, ctx2, ctx3, ctx4, ctx5};
             
+            //, ctx4, ctx5
+
 
             contexts[0]->esp = (int)pcb1->StackPtr;
             contexts[0]->ebp = (int)pcb1->Stack;
@@ -884,6 +886,7 @@ void com_hand(void) {
             
             //assign all other regs for each context
 
+            //change 3 to 5
             for (int i = 0; i < 5; i++){
 
                 contexts[i]->cs = 0x08;
@@ -993,7 +996,8 @@ void com_hand(void) {
         }
 
            //Start R5 User Commands
-        else if ( !(strcmp(buff, "AM")) || !(strcmp(buff, "Allocate Memory")) || !(strcmp(buff, "allocate memory")) || !(strcmp(buff, "allocateMemory")) || !(strcmp(buff, "AllocateMemory"))){
+        else if ( !(strcmp(buff, "AM")) || !(strcmp(buff, "Allocate Memory")) || !(strcmp(buff, "allocate memory")) || !(strcmp(buff, "allocateMemory")) || !(strcmp(buff, "AllocateMemory")))
+        {
             sys_req(WRITE, COM1, "Please enter the size of desired memory block:\n ", 47);
             int valid_digit = 0;
             int size = 0;
@@ -1022,15 +1026,10 @@ void com_hand(void) {
             }
             
             // int startAddressStr = (int)(startAddress);
-            // int startAddressStr = (int)(startAddress);
             
             // char* charstr = " ";
             // itoa(startAddressStr, charstr);
-            // char* charstr = " ";
-            // itoa(startAddressStr, charstr);
             sys_req(WRITE,COM1,"Memory allocated at address: ", 30);
-            printHex((unsigned int)startAddress);
-            // sys_req(WRITE,COM1, charstr, 10);
             printHex((unsigned int)startAddress);
             // sys_req(WRITE,COM1, charstr, 10);
             sys_req(WRITE,COM1, newline, 2);
@@ -1067,7 +1066,6 @@ void com_hand(void) {
             else if (valid == 1)
             {
                 sys_req(WRITE,COM1,"Block not found in free_memory()\n", 34);
-                sys_req(WRITE,COM1,"Block not found in free_memory()\n", 34);
             }
             else if (valid == 2)
             {
@@ -1100,10 +1098,12 @@ void com_hand(void) {
             sys_req(WRITE, COM1, "Invalid Command, Type \"Help\" for a list of commands\n", 53);
          }
 
-            sys_req(IDLE);
+        sys_req(IDLE);
         
     }
-}
+
+}//END OF COMHAND
+
 void custom_itoa(int num, char* str) {
     int i = 0;
     while (num > 0) {
@@ -1124,21 +1124,18 @@ void custom_itoa(int num, char* str) {
     }
 }
 
-void show_allocated_memory(void) { //print each block in the allocated list's data
+void show_allocated_memory() { //print each block in the allocated list's data
 
             //get head pointer to allocated list
-            mcb* tempMcb = alloc_list->tailPtr; //need to free this to prevent memory leaks at end
+            mcb* tempMcb = alloc_list->tailPtr;
             //while the next node is not null
             int blockCount = 1;
             char* blockCountStr = " ";
-            //int nodesChecked = 0;
-            while(tempMcb != NULL )
+            int nodesChecked = 0;
+            while(tempMcb != NULL && nodesChecked < alloc_list->count)
             {                
-                if(tempMcb->flag == 1){
                 if(tempMcb->Size != 0){
                 //print the name of the block
-                sys_req(WRITE, COM1, "\n", 2);
-
                 sys_req(WRITE, COM1, "\n", 2);
 
                 sys_req(WRITE, COM1, "Allocated Block ", 17);
@@ -1146,23 +1143,17 @@ void show_allocated_memory(void) { //print each block in the allocated list's da
                 sys_req(WRITE, COM1, blockCountStr, strlen(blockCountStr));
                 sys_req(WRITE, COM1, ":", 2);
                 sys_req(WRITE, COM1, "\n", 2);
-                sys_req(WRITE, COM1, "\n", 2);
 
                 //print the start address and size of allocated mcb block
                 // char* startAddressStr = (char*) (tempMcb)->Start_addr;
                 // char* charStr = " ";
                 // int startAddressInt = (int)((tempMcb->Start_addr));
                 // itoa(startAddressInt, charStr);
-                // char* charStr = " ";
-                // int startAddressInt = (int)((tempMcb->Start_addr));
-                // itoa(startAddressInt, charStr);
                 // startAddressStr = tempMcb->Start_addr;
-
 
                 sys_req(WRITE, COM1, "Start Address: ", 16);
 
                 printHex((unsigned int)tempMcb->Start_addr);
-            
                 
                 // sys_req(WRITE, COM1, charStr, 10);
                 char* sizeStr = " ";
@@ -1171,17 +1162,13 @@ void show_allocated_memory(void) { //print each block in the allocated list's da
                 // sizeStr = tempMcb->Size;
                 sys_req(WRITE, COM1, "Size of block: ", 16);
                 
-                
                 sys_req(WRITE, COM1, sizeStr, strlen(sizeStr));
-                sys_req(WRITE, COM1, "\n", 2);
                 sys_req(WRITE, COM1, "\n", 2);
                 blockCount++;
                 }
-                }
                 //move to the next node
-                tempMcb = tempMcb->PrevPtr;
-                //nodesChecked++;
-                
+                tempMcb = (void*)tempMcb->PrevPtr;
+                nodesChecked++;
             }
             sys_req(WRITE, COM1, "End of Allocated Memory list\n", 30);
 }
@@ -1192,27 +1179,22 @@ void show_free_memory(void){
     //print each block in the free list's data
 
             //get head pointer to free list
-            mcb* tempMcb = alloc_list->headPtr;
+            mcb* tempMcb = free_list->headPtr;
             //while the next node is not null
             int blockCount = 1;
             char* blockCountStr = " ";
-            
+            int nodesChecked = 0;
 
-            while(tempMcb != NULL)
+            while(tempMcb != NULL && nodesChecked < free_list->count)
             {
                  //print the start address and size of allocated mcb block
                 // char* startAddressStr = (char*) (tempMcb)->Start_addr;
                 
                 // int startAddressInt = (int)((tempMcb->Start_addr));
                 // char charStr[10];
-                // int startAddressInt = (int)((tempMcb->Start_addr));
-                // char charStr[10];
                 //void* SA = (void*)tempMcb->Start_addr;
                 // itoa(startAddressInt, charStr);
-                // itoa(startAddressInt, charStr);
                 //print the name of the block
-                if(tempMcb->flag == 0)
-                {
                 sys_req(WRITE, COM1, "\n", 2);
 
                 sys_req(WRITE, COM1, "Free Block: ", 13);
@@ -1221,16 +1203,12 @@ void show_free_memory(void){
                 
                 sys_req(WRITE, COM1, ":", 2);
                 sys_req(WRITE, COM1, "\n", 2);
-                sys_req(WRITE, COM1, "\n", 2);
                 // startAddressStr = tempMcb->Start_addr;
                 sys_req(WRITE, COM1, "Start Address: ", 16);
                 // sys_req(WRITE, COM1, charStr, 10);
                 printHex((unsigned int)tempMcb->Start_addr);
-                // sys_req(WRITE, COM1, charStr, 10);
-                printHex((unsigned int)tempMcb->Start_addr);
                 char* sizeStr = " ";
 
-                // sys_req(WRITE, COM1, "\n", 2);
                 // sys_req(WRITE, COM1, "\n", 2);
 
                 itoa((int)(tempMcb->Size), sizeStr);
@@ -1239,19 +1217,15 @@ void show_free_memory(void){
                 sys_req(WRITE, COM1, "Size of block: ", 16);
                 sys_req(WRITE, COM1, sizeStr, strlen(sizeStr) + 1);
                 sys_req(WRITE, COM1, "\n", 2);
-                sys_req(WRITE, COM1, "\n", 2);
 
                 //move to the next node
-                
-                
-                }
                 tempMcb = (void*)tempMcb->NextPtr;
+                blockCount++;
+                nodesChecked++;
             }
 
             sys_req(WRITE, COM1, "End of Free Memory list\n", 25);
 }
-
-
 
 void printHex(unsigned int num) {
     char hex[16] = "0123456789ABCDEF";

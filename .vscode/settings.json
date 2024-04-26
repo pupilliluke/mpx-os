@@ -5,12 +5,6 @@
         "chrono": "c",
         "queue": "c",
         "pcb.h": "c",
-        "mem-mgmt.h": "c",
-        "cstddef": "c",
-        "interrupts.h": "c",
-        "stdio.h": "c",
-        "memory.h": "c",
-        "r6.h": "c"
-    },
-    "C_Cpp.errorSquiggles": "disabled"
+        "mem-mgmt.h": "c"
+    }
 }

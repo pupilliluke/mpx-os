@@ -14,4 +14,3 @@ LIB_OBJECTS=\
 	lib/stdlib.o\
 	lib/core.o\
 	lib/ctype.o
- 

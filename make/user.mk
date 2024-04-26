@@ -18,4 +18,3 @@ USER_OBJECTS=\
 	user/com_hand.o\
 	user/time_date.o\
   user/alarm.o
- 

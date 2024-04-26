@@ -93,8 +93,8 @@ void kmain(void)
 	// Pass execution to your command handler so the user can interact with
 	// the system.
 	initialize_heap(50000);
-	sys_set_heap_functions(allocate_memory, free_memory);
-	serial_open(COM1, 19200);
+	//sys_set_heap_functions(allocate_memory, free_memory);
+
 	klogv(COM1, "Transferring control to commhand...");
 	//com_hand();
 	

@@ -13,9 +13,8 @@ typedef struct mcb{
     struct mcb* NextPtr;
     //Prev MCB in the list
     struct mcb* PrevPtr;
-
+    //Flag to indicate if the block is free (0) or allocated (1)
     int flag;
-
 }mcb;
 
 //memory list
