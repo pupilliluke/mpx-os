@@ -14,6 +14,8 @@ queue* ready;
 queue* blocked; 
 queue* suspended;
 
+pcb* current_pcb = NULL;
+context_t* initial_ctx = NULL;
 
 pcb* pcb_allocate(void){
     pcb* new_pcb = (pcb*)sys_alloc_mem(sizeof(pcb));
@@ -51,33 +53,34 @@ pcb* pcb_setup(const char* name, int class, int priority){
     new_pcb->State_E = READY;
     new_pcb->State_D = NOT_SUSPENDED;
     new_pcb->StackPtr = &(new_pcb->Stack[sizeof(new_pcb->Stack) - 1]);
-    memset(new_pcb->Stack, 0, sizeof(new_pcb->Stack));
+    //memset(&new_pcb->Stack, 0, sizeof(new_pcb->Stack));
     return new_pcb;
 }
 
 pcb* pcb_find(const char* name) {
-            if (readyQueue != NULL){
-                node* current = readyQueue->frontPtr;     
-                while(current != NULL){
-                    if (strcmp(current->data->Name, name) == 0) {
-                        return current->data;
-                    }
-                    current = current->nextPtr;
-                }
+    if (readyQueue != NULL){
+        node* current = readyQueue->frontPtr;     
+        while(current != NULL){
+            if (strcmp(current->data->Name, name) == 0) {
+                return current->data;
             }
-
-            if (blockedQueue != NULL){
-                node* current = blockedQueue->frontPtr;     
-            
-                while(current != NULL){
-                    if (strcmp(current->data->Name, name) == 0) {
-                        return current->data;
-                    }
-                    current = current->nextPtr;
-                } 
-            }
-            return NULL; // PCB not found
+            current = current->nextPtr;
         }
+    }
+
+    if (blockedQueue != NULL){
+        node* current = blockedQueue->frontPtr;     
+    
+        while(current != NULL){
+            if (strcmp(current->data->Name, name) == 0) {
+                return current->data;
+            }
+            current = current->nextPtr;
+        } 
+    }
+    return NULL; // PCB not found
+}
+
 void pcb_insert(pcb* new_pcb) {
     node* newPtr = (node*)sys_alloc_mem(sizeof(node));
     if (newPtr == NULL) {
@@ -132,13 +135,17 @@ void pcb_insert(pcb* new_pcb) {
                     temp->nextPtr = newPtr;
                     newPtr->nextPtr = tnode;
                     readyQueue->count++;
+                    if(newPtr->nextPtr == NULL)
+                    {
+                        readyQueue->rearPtr = newPtr;
+                    }
                 }
 
             }
             
             else if(readyQueue->count == 1)
             {
-                if(readyQueue->frontPtr->data->Priority < newPtr->data->Priority)
+                if(readyQueue->frontPtr->data->Priority <= newPtr->data->Priority)
                 {
                     enqueue(readyQueue, new_pcb);
                 }

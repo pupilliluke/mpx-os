@@ -1,6 +1,7 @@
 #include "../include/stdlib.h"
 #include "../include/memory.h"
 #include "../include/queue.h"
+#include <alarm.h>
 
 queue* readyQueue;
 queue* blockedQueue;
@@ -60,3 +61,4 @@ int is_empty(queue* queuePtr) {
     }
     return ((queuePtr->frontPtr == NULL) && (queuePtr->rearPtr == NULL));
 }
+

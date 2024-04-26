@@ -21,7 +21,7 @@ dirdeps() {
 	done >> "$MKFILE"
 
 	for i in $(find "$DIR" -name '*.c'); do
-		printf '\\\n\t%s' "$(echo $i | sed 's/\.c$/\.o/')"
+		printf '\\\n\t%s' "$(echo $i | sed 's/\.c$/\.o/')" 
 	done >> "$MKFILE"
 
 	printf '\n' >> "$MKFILE"

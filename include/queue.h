@@ -1,6 +1,6 @@
 #ifndef QUEUE_H
 #define QUEUE_H
-#include "PCB.h"
+#include <PCB.h>
 
 typedef struct queue
 {
@@ -27,6 +27,7 @@ queue* create_queue(void);
 
 extern queue* readyQueue;
 extern queue* blockedQueue;
+
 
 #endif /* QUEUE_H */
 

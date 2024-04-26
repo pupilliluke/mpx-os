@@ -6,7 +6,9 @@
 #include <string.h>
 #include <memory.h>
 #include <com_hand.h>
-
+#include <processes.h>
+#include <R4.h>
+#include <mem-mgmt.h>
 static void klogv(device dev, const char *msg)
 {
 	char prefix[] = "klogv: ";
@@ -90,9 +92,18 @@ void kmain(void)
 	// 9) YOUR command handler -- *create and #include an appropriate .h file*
 	// Pass execution to your command handler so the user can interact with
 	// the system.
+	initialize_heap(50000);
+	sys_set_heap_functions(allocate_memory, free_memory);
+	serial_open(COM1, 19200);
 	klogv(COM1, "Transferring control to commhand...");
-	com_hand();
-	// R4: __asm__ volatile ("int $0x60" :: "a"(IDLE));
+	//com_hand();
+	
+	comhand_setup();
+	sys_idle_setup();
+	
+
+	//R4: 
+	__asm__ volatile ("int $0x60" :: "a"(IDLE));
 
 	// 10) System Shutdown -- *headers to be determined by your design*
 	// After your command handler returns, take care of any clean up that

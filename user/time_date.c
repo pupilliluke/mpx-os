@@ -5,6 +5,7 @@
 #include <mpx/interrupts.h>
 #include <memory.h>
 #include <stdlib.h>
+#include <string.h>
 //use inb and any of the regesters from the intel paper
 //Index | Standard Bank
 //0x00 | Seconds
@@ -88,15 +89,19 @@ void getTime(void){
      char minStr[4];
      char hourStr[4];
 
+	
+	 itoa(hours, hourStr);
 	 itoa(seconds, secStr);
      itoa(minutes, minStr);
-     itoa(hours, hourStr);
-	 sys_req(WRITE, COM1, hourStr, 4);
+
+	 sys_req(WRITE, COM1, hourStr, 3);
 	 sys_req(WRITE, COM1, ":", 2);
 	 sys_req(WRITE, COM1, minStr, 4);
 	 sys_req(WRITE, COM1, ":", 2);
 	 sys_req(WRITE, COM1, secStr, 4);
      sys_req(WRITE, COM1, "\n", 2);
+
+
 }
 
 void getDate(void){

@@ -29,10 +29,42 @@ typedef struct pcb {
     int Priority;
     pcb_state_E State_E;
     pcb_state_D State_D;
-    char Stack[1024];
-    void* StackPtr;
+    void* StackPtr;     //top
+    char Stack[4096];   //bottom
+    
     struct pcb* next;
 } pcb;
+
+//R3
+   typedef struct context
+{
+    //Segments
+    int ds;
+    int es;
+    int fs;
+    int gs;
+    int ss;
+    //registers
+    int esp;
+    int eax;
+    int ebx;
+    int ecx;
+    int edx;
+    int esi;
+    int edi;
+    int ebp; 
+    //flags
+    int eip;
+    int cs;
+    int eflags;
+
+} context_t;
+
+
+
+extern pcb* current_pcb;
+
+extern context_t* initial_ctx;
 
 pcb* pcb_allocate(void);
 
@@ -45,41 +77,5 @@ pcb* pcb_find(const char* name);
 void pcb_insert(pcb* new_pcb);
 
 int pcb_remove(pcb* target_pcb);
-
-//R3 
-typedef struct context {
-
-    unsigned int ESP; //Stack pointer (in the SS segment). // gets pushed last
-
-    // Segment Registers
-    unsigned int SS; //stack segment register
-         //data segment registers
-    unsigned int DS; // Data Segment
-    unsigned int ES; // Extra Segment
-    unsigned int FS; // F Segment
-    unsigned int GS; // G Segment
-
-
-    // General Purpose Registers
-    unsigned int EAX; //EAX—Accumulator for operands and results data.
-    unsigned int EBX; //Pointer to data in the DS segment.
-    unsigned int ECX; //Counter for string and loop operations.
-    unsigned int EDX; //I/O pointer.
-    unsigned int ESI; //Pointer to data in the segment pointed to by the DS register; source pointer for string operations.
-    unsigned int EDI; //Pointer to data (or destination) in the segment pointed to by the ES register; destination pointer for string operations.
-    unsigned int EBP; //Pointer to data on the stack (in the SS segment).
-
-        // Status and Control Register
-    unsigned int EIP;    //  can also be called "program counter." It contains the offset in the current code segment for the next instruction to be executed.
-
-    unsigned int CS; //Stack pointer (in the SS segment).
-
-        // Status and Control Register
-    unsigned int EFLAGS; //  contains a group of status flags, a control flag, and a group of system flags
-//gets pushed first
-
-}context;
-
-
 
 #endif

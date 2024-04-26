@@ -45,4 +45,8 @@ void proc5(void);
 */
 void sys_idle_process(void);
 
+void command_handler(void);
+
+void alarm_setup(void);
+
 #endif
